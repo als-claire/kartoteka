@@ -1,0 +1,74 @@
+# Собирает сайт из папки presentations/ и публикует его на GitHub Pages.
+# Запускается при каждом изменении ветки main (в том числе при загрузке файлов через сайт GitHub)
+# и вручную: вкладка Actions → «Собрать и опубликовать сайт» → Run workflow.
+name: Собрать и опубликовать сайт
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Если файлы загружают несколько раз подряд, публикуется последняя версия.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Скачать репозиторий
+        uses: actions/checkout@v4
+
+      - name: Установить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Установить зависимости
+        run: npm ci
+
+      # Модель, данные для OCR и уже обработанные презентации хранятся между запусками,
+      # поэтому пересчитываются только новые или изменённые файлы.
+      - name: Восстановить кэш сборки
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: build-cache-${{ hashFiles('presentations/**', 'build/**', 'package-lock.json') }}
+          restore-keys: build-cache-
+
+      # LibreOffice нужен только для миниатюр слайдов PPTX.
+      - name: Установить LibreOffice (если есть PPTX)
+        if: hashFiles('presentations/**/*.pptx', 'presentations/**/*.PPTX') != ''
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends libreoffice-impress fonts-dejavu fonts-liberation > /dev/null
+
+      - name: Собрать сайт
+        run: npm run build
+
+      - name: Подготовить публикацию
+        uses: actions/configure-pages@v5
+
+      - name: Загрузить сайт
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Опубликовать на GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
