@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Поиск по докладам</title>
+  <meta name="description" content="Поиск по слайдам учебных докладов: находит конкретный слайд и предложение.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f6f8f'/%3E%3Ccircle cx='14' cy='14' r='7' fill='none' stroke='white' stroke-width='3'/%3E%3Cpath d='M19 19l6 6' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+  </script>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-row">
+      <a class="brand" href="./" id="home">Поиск по докладам</a>
+      <button class="icon-btn" id="theme" type="button" aria-label="Сменить тему" title="Светлая / тёмная тема">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <form class="search" role="search" id="form" onsubmit="return false">
+      <svg class="search-ico" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="q" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"
+             placeholder="Например: кредит, урбанизация, налоги" aria-label="Поиск по докладам" autofocus>
+      <button type="button" class="clear" id="clear" aria-label="Очистить" hidden>×</button>
+    </form>
+    <p class="status" id="status" aria-live="polite">Загружаю доклады…</p>
+
+    <div class="row-label">Примеры:</div>
+    <div class="chips" id="examples"></div>
+    <div class="row-label">Доклады:</div>
+    <div class="chips chips-docs" id="docs"></div>
+
+    <div class="legend" id="legend" hidden>
+      <span><mark class="m-e">слово</mark> из запроса</span>
+      <span><mark class="m-f">опечатка</mark> или похожее</span>
+      <span><mark class="m-s">синоним</mark> из словаря</span>
+      <span><span class="m-sem">близко по смыслу</span></span>
+    </div>
+
+    <section id="results" aria-live="polite"></section>
+  </main>
+
+  <dialog id="viewer" aria-label="Просмотр слайда">
+    <div class="v-head">
+      <div class="v-meta" id="v-meta"></div>
+      <button class="icon-btn" id="v-close" type="button" aria-label="Закрыть">×</button>
+    </div>
+    <div class="v-body">
+      <div class="v-stage">
+        <button class="v-nav v-prev" id="v-prev" type="button" aria-label="Предыдущий слайд">‹</button>
+        <div class="v-img" id="v-img"></div>
+        <button class="v-nav v-next" id="v-next" type="button" aria-label="Следующий слайд">›</button>
+      </div>
+      <h2 class="v-title" id="v-title"></h2>
+      <div class="v-text" id="v-text"></div>
+      <a class="v-file" id="v-file" href="#" target="_blank" rel="noopener">Открыть исходный файл</a>
+    </div>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

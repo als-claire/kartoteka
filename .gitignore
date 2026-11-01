@@ -1,0 +1,14 @@
+# Зависимости и промежуточные файлы сборки — их не нужно хранить в репозитории
+node_modules/
+.cache/
+_site/
+_site-test/
+test-results/
+playwright-report/
+.claude/
+
+# Временные файлы Office и системы
+~$*
+.DS_Store
+Thumbs.db
+desktop.ini
